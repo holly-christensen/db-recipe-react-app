@@ -1,0 +1,22 @@
+Connecting to the MySQL Database Server from Node.js
+https://www.mysqltutorial.org/mysql-nodejs/connect/
+
+Deleting Data in MySQL from Node.js
+https://www.mysqltutorial.org/mysql-nodejs/delete/
+
+Updating Data in MySQL Database from Node.js
+https://www.mysqltutorial.org/mysql-nodejs/update/
+
+Calling MySQL Stored Procedures from Node.js
+https://www.mysqltutorial.org/mysql-nodejs/call-stored-procedures/
+
+npm mysql docs
+https://www.npmjs.com/package/mysql#pooling-connections
+
+reference tutorial code
+https://github.com/DevelopMindfully/full-stack-react-app-tutorial
+
+Code Your First API With Node.js and Express
+  - Set Up the Server
+  - Connect a Database
+https://code.tutsplus.com/series/code-your-first-api-with-nodejs-and-express--cms-1291
