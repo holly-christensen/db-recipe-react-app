@@ -4,13 +4,19 @@ var Users = require('../models/users');
 var router = express.Router();
 
 router.get('/', (req, res) => {
-  //res.send('this works');
   Users.retrieveAll((err, users) => {
     if (err)
       return res.json(err);
     return res.json(users);
   });
+});
 
+router.get('/:userId', (req, res) => {
+  Users.getUser(req.params.userId, (err, users) => {
+    if (err)
+      return res.json(err);
+    return res.json(users);
+  });
 });
 
 

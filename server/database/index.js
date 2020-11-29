@@ -10,6 +10,7 @@ const config = {
   debug: false
 };
 
+
 class Database {
   constructor () {
     this.pool = mysql.createPool(config);
@@ -23,13 +24,18 @@ class Database {
   _query (query, ...args) {
     this.pool.getConnection(function(err, connection) {
       if (err) throw err;
-      console.log("Got pool connection")
+      const params = args.length === 2 ? args[0] : [];
+      const callback = args.length === 1 ? args[0] : args[1];
+      // console.log("Got pool connection")
 
       connection.query(query, function(err, results, fields) {
-          if (err) throw err;
-          console.log('The results are: ', results);
+          if (err) {
+            console.log(err.stack);
+            return callback({ error: 'Database error.' }, null);
+          }
+          callback({}, results);
           connection.release();
-          // Handle error after the release.
+          // handle error after release
           if (err) throw err;
           });
     });

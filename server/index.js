@@ -17,8 +17,10 @@ app.use(bodyParser.json());
 
 //interact with the express middleware
 app.use('/api/users', require('./api/users'));
+app.use('/api/recipes', require('./api/recipes'));
 
-// app.get('/test', (req, res) => res.send('Hello'));
+// app.use('/api/recipes/:recipeId', require('./api/recipes'));
+
 
 // if (ENV === 'production') {
 //   app.use(express.static(path.join(__dirname, '../client/build')));
@@ -29,7 +31,7 @@ app.use('/api/users', require('./api/users'));
 
 //when a request is made to the server on this port, express will send a response
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}!`);
+  console.log(`Server listening on port ${PORT}`);
 });
 
 
