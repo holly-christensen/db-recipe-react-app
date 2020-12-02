@@ -18,8 +18,8 @@ app.use(bodyParser.json());
 //interact with the express middleware
 app.use('/api/users', require('./api/users'));
 app.use('/api/recipes', require('./api/recipes'));
+app.use('/api/ingredients', require('./api/ingredients'));
 
-// app.use('/api/recipes/:recipeId', require('./api/recipes'));
 
 
 // if (ENV === 'production') {
