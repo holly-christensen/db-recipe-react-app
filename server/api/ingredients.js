@@ -14,13 +14,13 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/:ingredient_name', (req, res) => {
-  Ingredients.getIngredientId(req.params.ingredient_name, (err, ingredient_id) => {
-    if (err)
-      return res.json(err);
-    return res.json(ingredient_id);
-  });
-});
+// router.get('/:ingredient_name', (req, res) => {
+//   Ingredients.getIngredientId(req.params.ingredient_name, (err, ingredient_id) => {
+//     if (err)
+//       return res.json(err);
+//     return res.json(ingredient_id);
+//   });
+// });
 
 
 // router.post('/', function(req, res) {

@@ -12,8 +12,8 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/:recipeId', (req, res) => {
-  Recipes.getRecipeInfo(req.params.recipeId, (err, recipe) => {
+router.get('/:recipe_id', (req, res) => {
+  Recipes.getRecipeInfo(req.params.recipe_id, (err, recipe) => {
     if (err)
       return res.json(err);
     return res.json(recipe);

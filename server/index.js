@@ -19,6 +19,7 @@ app.use(bodyParser.json());
 app.use('/api/users', require('./api/users'));
 app.use('/api/recipes', require('./api/recipes'));
 app.use('/api/ingredients', require('./api/ingredients'));
+app.use('/api/appliances', require('./api/appliances'));
 
 
 

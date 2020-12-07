@@ -3,7 +3,7 @@ const db = require('../database/index.js');
 class Ingredients {
 
   static getAllIngredients(callback) {
-    db._query('SELECT ingredient_name from Ingredient ORDER BY ingredient_name', (err, res) => {
+    db._query('SELECT ingredient_id, ingredient_name from Ingredient ORDER BY ingredient_name', (err, res) => {
       if(err.error)
         return callback(err);
       callback(res);

@@ -10,16 +10,25 @@ class Users {
     });
   }
 
-  static getPantry(username, callback) {
-    db._query('SELECT DISTINCT ingredient_id, ingredient_name FROM Pantry LEFT JOIN User USING(user_id) LEFT JOIN Ingredient USING(ingredient_id) WHERE username = \'' + username + '\'', (err, res) => {
+  static getPantry(user_id, callback) {
+    db._query('SELECT DISTINCT ingredient_id, ingredient_name FROM Pantry LEFT JOIN User USING(user_id) LEFT JOIN Ingredient USING(ingredient_id) WHERE user_id = \'' + user_id + '\' ORDER BY ingredient_name', (err, res) => {
       if(err.error)
         return callback(err);
       callback(res);
     });
   }
 
-  static getSaved(username, callback) {
-    db._query('SELECT recipe_id, title FROM Save LEFT JOIN User USING(user_id)  LEFT JOIN Recipe USING(recipe_id)  WHERE username = \'' + username + '\' ORDER BY date_saved DESC', (err, res) => {
+  static getNotInPantry(user_id, callback) {
+    db._query('CALL ingredientsNotInPantry(' + user_id + ')', (err, res) => {
+      if(err.error)
+        return callback(err);
+      callback(res[0]);
+    });
+  }
+
+
+  static getSaved(user_id, callback) {
+    db._query('SELECT recipe_id, title, r.description FROM Save s LEFT JOIN User u USING(user_id)  LEFT JOIN Recipe r USING(recipe_id)  WHERE s.user_id =' + user_id + ' ORDER BY date_saved DESC', (err, res) => {
       if(err.error)
         return callback(err);
       callback(res);
@@ -72,6 +81,40 @@ class Users {
         callback(res);
     });
   }
+
+  static addToSave(user_id, recipe_id, callback) {
+    db._query(
+      'INSERT INTO Save (user_id, recipe_id) VALUES (\'' + user_id + '\', \'' + recipe_id + '\')',
+      function(err,res) {
+        if(err.error)
+          return callback(err);
+        callback(res);
+    });
+  }
+
+  //________DELETES_____________
+
+  static removeFromPantry(user_id, ingredient_id, callback) {
+    db._query(
+      'DELETE FROM Pantry WHERE user_id = \'' + user_id + '\'AND ingredient_id = \'' + ingredient_id + '\'',
+      function(err,res) {
+        if(err.error)
+          return callback(err);
+        callback(res);
+    });
+  }
+
+  static removeFromSave(user_id, recipe_id, callback) {
+    db._query(
+      'DELETE FROM Save WHERE user_id = \'' + user_id + '\' AND recipe_id = \'' + recipe_id + '\'',
+      function(err,res) {
+        if(err.error)
+          return callback(err);
+        callback(res);
+    });
+  }
+
+
 }
 
 module.exports = Users;
