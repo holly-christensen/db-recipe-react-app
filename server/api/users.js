@@ -32,6 +32,14 @@ router.get('/:user_id/saved', (req, res) => {
   });
 });
 
+router.get('/:user_id/saved/:recipe_id', (req, res) => {
+  Users.getSavedStatus(req.params.user_id, req.params.recipe_id, (err, users) => {
+    if (err)
+      return res.json(err);
+    return res.json(users);
+  });
+});
+
 router.get('/:username/recommendations', (req, res) => {
   Users.getRecTrending(req.params.username, (err, users) => {
     if (err)

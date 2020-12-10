@@ -36,6 +36,15 @@ class Users {
   }
 
 
+  static getSavedStatus(user_id, recipe_id, callback) {
+    db._query('SELECT IF( EXISTS( SELECT * FROM Save WHERE user_id = '+ user_id+' AND recipe_id = '+recipe_id+'), 1, 0) as \'isSaved\'', (err, res) => {
+      if(err.error)
+        return callback(err);
+      callback(res);
+    });
+  }
+
+
   static getRecTrending(username, callback) {
     db._query('call recommendTrending()', (err, res) => {
       if(err.error)

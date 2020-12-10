@@ -14,5 +14,13 @@ router.get('/', (req, res) => {
   });
 });
 
+router.post('/:recipe_id', (req, res) => {
+  Recipes.addRecipeAppliance(req.params.recipe_id, req.body.appliance_id, (err, result) => {
+    if (err)
+      return res.json(err);
+    return res.json(result);
+  });
+});
+
 
 module.exports = router;

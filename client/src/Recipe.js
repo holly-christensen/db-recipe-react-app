@@ -1,20 +1,11 @@
 import React, { Component } from "react";
 import Constants from "./constants";
 
-import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
-import CameraIcon from '@material-ui/icons/PhotoCamera';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Grid from '@material-ui/core/Grid';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import Link from '@material-ui/core/Link';
+import Box from '@material-ui/core/Box';
 
 
 
@@ -27,8 +18,14 @@ class Recipe extends Component {
       recipe_id: "",
       title: "",
       description: "",
-      saved: false
+      instructions: "",
+      isSaved: null,
+      ingredientList: [{ingredient_id: '', ingredient_name: ''}],
+      showSave: null,
     };
+    // this.setState = this.setState.bind(this);
+    this.handleAddRemove = this.handleAddRemove.bind(this)
+
 
   }
 
@@ -37,46 +34,86 @@ class Recipe extends Component {
     async function fetchRecipe() {
       const response = await fetch('/api/recipes/'+id);
       const recipe = await response.json();
-      console.log(recipe);
       return recipe;
     }
     fetchRecipe().then(res => {
       this.setState({
         recipe_id: res[0].recipe_id,
         title: res[0].title,
-        description: res[0].description
+        description: res[0].description,
+        instructions: res[0].instructions
       });
     });
-    //CHECK IF THE RECIPE IS SAVED
-    // async function fetchSaved() {
-      // const response = await fetch('/api/users/'+Constants.user_id+'/saved'+this.state.recipe_id); //RETURNS TRUE OR FALSE (UPDATE THE API WITH SAVED/:RECIPE_ID TO RETURN TRUE/FALSE IF IT'S SAVED)
-    //   const result = await response.json();
-    //   console.log(result);
-    //   return result;
-    // }
-    // fetchSaved().then(res => {
-    //   this.setState({ saved: res[0] });
-    //   console.log(this.state.saved);
-    // });
   }
 
-  handleAddToSaved = (itemToAdd) => {
-    console.log("item to add:"+itemToAdd);
+
+  updateSaved () {
+    const user_id = Constants.user_id;
+    const recipe_id = this.state.recipe_id;
+    async function fetchSavedStatus() {
+      const response = await fetch(`/api/users/${user_id}/saved/${recipe_id}`);
+      const isSaved = await response.json();
+      return isSaved;
+    }
+    fetchSavedStatus().then(res => {
+      this.setState({ isSaved: !!res[0].isSaved });
+      this.setState({ showSave: !res[0].isSaved });
+      return res;
+    });
+  }
+
+  updateIngredients () {
+    const recipe_id = this.state.recipe_id;
+    async function fetchIngredientList() {
+      const response = await fetch(`/api/recipes/${recipe_id}/ingredients`);
+      const ingredientList = await response.json();
+      return ingredientList;
+    }
+    fetchIngredientList().then(res => {
+      this.setState({ ingredientList: res });
+      if(this.state.ingredientList.length === 0){
+        this.setState({ingredientList: [{ingredient_id:0, ingredient_name: "No items in recipe"}]})
+      }
+    });
+  }
+
+
+  showHideComponent() {
+      this.setState({ showHideRemove: !this.state.showHideRemove });
+      this.setState({ showHideSave: !this.state.showHideSave });
+
+}
+
+  handleAddRemove(isSaved) {
+    this.setState({isSaved});
+    if(isSaved){
+      this.handleAddToSaved()
+    }
+    else {this.handleRemoveFromSaved()}
+
+  }
+
+  handleAddToSaved = () => {
+    const itemToAdd = this.state.recipe_id;
     fetch('/api/users/'+Constants.user_id+'/saved', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: Constants.user_id, recipe_id: itemToAdd })
     });
+    this.showHideComponent();
+    this.updateSaved();
     this.updateRecipe();
   };
 
-  handleRemoveFromSaved = (itemToRemove) => {
-    console.log("item to remove:"+itemToRemove);
+  handleRemoveFromSaved = () => {
+    const itemToRemove = this.state.recipe_id;
     fetch('/api/users/'+Constants.user_id+'/saved', {
       method: 'delete',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: Constants.user_id, recipe_id: itemToRemove })
     });
+    this.showHideComponent();
+    this.updateSaved();
     this.updateRecipe();
   };
 
@@ -87,7 +124,6 @@ class Recipe extends Component {
     async function fetchRecipe() {
       const response = await fetch('/api/'+path);
       const recipe = await response.json();
-      console.log(recipe);
       return recipe;
     }
     fetchRecipe().then(res => {
@@ -95,32 +131,57 @@ class Recipe extends Component {
         {
         recipe_id: res[0].recipe_id,
         title: res[0].title,
-        description: res[0].description
+        description: res[0].description,
+        instructions: res[0].instructions
       });
-      console.log(this.state.recipe_id);
+      this.updateIngredients();
+      this.updateSaved();
     });
-
-    // this.updateRecipe();
   }
 
   render() {
-    const {id} = this.state.recipe_id;
+    const {recipe_id} = this.state;
+
 
     return(
       <React.Fragment>
-        <Typography gutterBottom variant="h5" component="h2">
-          {this.state.title}
+      <Container maxWidth="md" >
+
+        <Box m={5}>
+          <Typography gutterBottom variant="h4" component="h2">
+            {this.state.title}
+          </Typography>
+          <div>
+            {this.state.showSave && <Button variant="text" color="primary" onClick={() => this.handleAddRemove(true)}>Save
+            </Button>}
+            {!this.state.showSave && <Button variant="text" color="secondary" onClick={() => this.handleAddRemove(false)}>Unsave
+            </Button>}
+          </div>
+          <Typography>
+            {this.state.description}
+          </Typography>
+        </Box>
+
+        <Box m={5}>
+        <Typography component="h4" variant="h5">
+          Ingredients
         </Typography>
-        <Typography gutterBottom variant="h5" component="h4">
-          {this.state.recipe_id}
+          <ul>
+            {this.state.ingredientList.map((ingredient) => (
+              <li key={ingredient.ingredient_id}>{ingredient.ingredient_name}</li>
+            ))}
+          </ul>
+        </Box>
+
+        <Box m={5}>
+        <Typography component="h4" variant="h5" gutterBottom>
+          Instructions
         </Typography>
-        <Typography>
-          {this.state.description}
-        </Typography>
-        <Button variant="text" color="secondary" onClick={() =>    this.handleAddToSaved(this.state.recipe_id)}>Save
-        </Button>
-        <Button variant="text" color="secondary" onClick={() =>    this.handleRemoveFromSaved(this.state.recipe_id)}>Remove
-        </Button>
+          <Typography>
+            {this.state.instructions}
+          </Typography>
+        </Box>
+        </Container>
       </React.Fragment>
 
     )
@@ -128,7 +189,6 @@ class Recipe extends Component {
   }
 
 }
-
 
 
 export default Recipe;
